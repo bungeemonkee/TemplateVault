@@ -17,6 +17,8 @@ namespace TemplateVault
     {
         static async Task<int> Main(string[] args)
         {
+            var console = new AbstractConsole();
+            
             var options = Parser.Default.ParseArguments<CommandLineOptions>(args)
                 .MapResult(x => x, x => null!);
 
@@ -33,7 +35,7 @@ namespace TemplateVault
                     .Replace(".tpl", "");
             }
 
-            Console.WriteLine("Using template file: {0}", options.InputFile);
+            console.WriteLine("Using template file: {0}", options.InputFile);
             
             string template;
             try
@@ -42,7 +44,7 @@ namespace TemplateVault
             }
             catch (IOException)
             {
-                Console.Error.WriteLine("Unable to read template file: {0}", options.InputFile);
+                console.WriteErrorLine("Unable to read template file: {0}", options.InputFile);
                 return 1;
             }
 
@@ -60,7 +62,7 @@ namespace TemplateVault
                 }
                 catch (IOException)
                 {
-                    Console.Error.WriteLine("Failed to parse VAULTROOT uri: {0}", vaultUri);
+                    console.WriteErrorLine("Failed to parse VAULTROOT uri: {0}", vaultUri);
                     return -1;
                 }
 
@@ -70,20 +72,20 @@ namespace TemplateVault
 
             if (vaultRoot == null)
             {
-                Console.Error.WriteLine("No VAULTROOT variable found in template.");
+                console.WriteErrorLine("No VAULTROOT variable found in template.");
                 return 1;
             }
 
-            Console.WriteLine("Using VAULTROOT uri: {0}", vaultRoot.AbsoluteUri);
+            console.WriteLine("Using VAULTROOT uri: {0}", vaultRoot.AbsoluteUri);
 
-            Console.WriteLine("Found secret paths:");
+            console.WriteLine("Found secret paths:");
             foreach (var variable in variables)
             {
-                Console.WriteLine("  * {0}", variable);
+                console.WriteLine("  * {0}", variable);
             }
 
             // get the Okta login for use with Vault
-            var vaultAuth = GetOktaAuthorization();
+            var vaultAuth = GetOktaAuthorization(console);
 
             // get the vault object
             var vaultRootNoPath = new Uri(vaultRoot, "/");
@@ -97,7 +99,7 @@ namespace TemplateVault
                 var (variableMount, variablePath, variableName) = ExtractSecretPathParts(vaultRoot, variable);
                 if (variableMount == null || variablePath == null || variableName == null)
                 {
-                    Console.Error.WriteLine("Unable to extract mount, path, and name for variable: {0}", variable);
+                    console.WriteErrorLine("Unable to extract mount, path, and name for variable: {0}", variable);
                 }
                 
                 // get the secret at that path
@@ -108,10 +110,10 @@ namespace TemplateVault
                 }
                 catch (VaultApiException e)
                 {
-                    Console.Error.WriteLine("Failed to get secret {0}: {1}", variable, e.Message.Trim());
-                    Console.Error.WriteLine("  * Mount: {0}", variableMount);
-                    Console.Error.WriteLine("  * Path:  {0}", variablePath);
-                    Console.Error.WriteLine("  * Name:  {0}", variableName);
+                    console.WriteErrorLine("Failed to get secret {0}: {1}", variable, e.Message.Trim());
+                    console.WriteErrorLine("  * Mount: {0}", variableMount);
+                    console.WriteErrorLine("  * Path:  {0}", variablePath);
+                    console.WriteErrorLine("  * Name:  {0}", variableName);
                     return 1;
                 }
 
@@ -122,7 +124,7 @@ namespace TemplateVault
                 }
                 else
                 {
-                    Console.Error.WriteLine("Secret {0} not found at path {1}", variableName, variablePath);
+                    console.WriteErrorLine("Secret {0} not found at path {1}", variableName, variablePath);
                     return -1;
                 }
             }
@@ -133,7 +135,7 @@ namespace TemplateVault
                 result = result.Replace($"{{{{{variable.Key}}}}}", variable.Value);
             }
             
-            Console.WriteLine("Saving result to {0}", options.OutputFile);
+            console.WriteLine("Saving result to {0}", options.OutputFile);
 
             try
             {
@@ -141,7 +143,7 @@ namespace TemplateVault
             }
             catch (IOException)
             {
-                Console.Error.WriteLine("Unable to write result file: {0}", options.OutputFile);
+                console.WriteErrorLine("Unable to write result file: {0}", options.OutputFile);
             }
 
             // done, success
@@ -162,34 +164,34 @@ namespace TemplateVault
                 .ToArray();
         }
 
-        private static OktaAuthMethodInfo GetOktaAuthorization()
+        private static OktaAuthMethodInfo GetOktaAuthorization(IAbstractConsole console)
         {
-            var user = ReadValue("OKTA Username");
-            var pass = ReadSecureValue("OKTA Password");
+            var user = ReadValue(console, "OKTA Username");
+            var pass = ReadSecureValue(console, "OKTA Password");
             return new OktaAuthMethodInfo(user, pass);
         }
 
-        private static string ReadValue(string? prompt)
+        private static string ReadValue(IAbstractConsole console, string? prompt)
         {
             if (prompt != null)
             {
-                Console.Write("{0}: ", prompt);
+                console.Write("{0}: ", prompt);
             }
 
             string? user = null;
             while (string.IsNullOrWhiteSpace(user))
             {
-                user = Console.ReadLine();
+                user = console.ReadLine();
             }
 
             return user;
         }
 
-        private static string ReadSecureValue(string? prompt)
+        private static string ReadSecureValue(IAbstractConsole console, string? prompt)
         {
             if (prompt != null)
             {
-                Console.Write("{0}: ", prompt);
+                console.Write("{0}: ", prompt);
             }
 
             var passwordBuilder = new StringBuilder(32);
@@ -200,7 +202,7 @@ namespace TemplateVault
                 {
                     // get the next key
                     // intercept the event to prevent it from being printed on the command line
-                    var keyInfo = Console.ReadKey(true);
+                    var keyInfo = console.ReadKey(true);
                     key = keyInfo.Key;
 
                     if (key == ConsoleKey.Backspace && passwordBuilder.Length > 0)
@@ -217,7 +219,7 @@ namespace TemplateVault
             } while (passwordBuilder.Length == 0);
             
             // insert the final enter that was captured and swallowed
-            Console.WriteLine();
+            console.WriteLine();
 
             // get the final string
             return passwordBuilder.ToString();
