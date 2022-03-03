@@ -5,9 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommandLine;
-using VaultSharp;
 using VaultSharp.Core;
-using VaultSharp.V1.Commons;
 
 namespace TemplateVault
 {
@@ -93,46 +91,27 @@ namespace TemplateVault
 
             // get the login for use with Vault
             var vaultAuth = vaultAuthFactory.GetAuth(options.AuthType);
-
-            // get the vault object
-            var vaultRootNoPath = new Uri(vaultRoot, "/");
-            var vaultSettings = new VaultClientSettings(vaultRootNoPath.ToString(), vaultAuth);
-            var vault = new VaultClient(vaultSettings);
+            
+            // get the vault secret extractor
+            var secretExtractor = new VaultSecretExtractor(vaultAuth, vaultRoot);
 
             var variableValues = new Dictionary<string, string>();
             foreach (var variable in variables)
             {
-                // separate the path and the variable name
-                var (variableMount, variablePath, variableName) = ExtractSecretPathParts(vaultRoot, variable);
-                if (variableMount == null || variablePath == null || variableName == null)
-                {
-                    console.WriteErrorLine("Unable to extract mount, path, and name for variable: {0}", variable);
-                }
-                
-                // get the secret at that path
-                Secret<SecretData> secret;
                 try
                 {
-                    secret = await vault.V1.Secrets.KeyValue.V2.ReadSecretAsync(variablePath, mountPoint:variableMount);
-                }
-                catch (VaultApiException e)
+                    var secretValue = await secretExtractor.GetSecretValue(variable);
+                    if (secretValue == null)
+                    {
+                        console.WriteErrorLine("No secret found at path {1}", variable);
+                        return -1;
+                    }
+
+                    variableValues[variable] = secretValue;
+                } catch (VaultApiException e)
                 {
                     console.WriteErrorLine("Failed to get secret {0}: {1}", variable, e.Message.Trim());
-                    console.WriteErrorLine("  * Mount: {0}", variableMount);
-                    console.WriteErrorLine("  * Path:  {0}", variablePath);
-                    console.WriteErrorLine("  * Name:  {0}", variableName);
                     return 1;
-                }
-
-                // get the actual variable value
-                if (secret.Data.Data.TryGetValue(variableName!, out var variableValue))
-                {
-                    variableValues[variable] = variableValue?.ToString() ?? string.Empty;
-                }
-                else
-                {
-                    console.WriteErrorLine("Secret {0} not found at path {1}", variableName, variablePath);
-                    return -1;
                 }
             }
 
@@ -169,26 +148,6 @@ namespace TemplateVault
                 .Select(x => x.Value)
                 .Distinct()
                 .ToArray();
-        }
-
-        private static (string? mount, string? path, string? name) ExtractSecretPathParts(Uri vaultRoot, string path)
-        {
-            // combine the root uri with the path
-            // ...get the absolute path that results
-            // ...split it, removing empty path sections
-            var parts = new Uri(vaultRoot, path)
-                .AbsolutePath
-                .Split('/', StringSplitOptions.RemoveEmptyEntries);
-
-            if (parts.Length < 3)
-            {
-                // somehow the path wasn't long enough to contain the necessary parts
-                return (null, null, null);
-            }
-
-            // the path is everything except the first and last segments
-            path = string.Join('/', parts[1..^1]);
-            return (parts[0], path, parts[^1]);
         }
     }
 }
