@@ -18,6 +18,7 @@ namespace TemplateVault
         static async Task<int> Main(string[] args)
         {
             var console = new AbstractConsole();
+            var file = new AbstractFile();
             
             var options = Parser.Default.ParseArguments<CommandLineOptions>(args)
                 .MapResult(x => x, x => null!);
@@ -40,7 +41,7 @@ namespace TemplateVault
             string template;
             try
             {
-                template = await File.ReadAllTextAsync(options.InputFile);
+                template = await file.ReadAllTextAsync(options.InputFile);
             }
             catch (IOException)
             {
@@ -139,7 +140,7 @@ namespace TemplateVault
 
             try
             {
-                File.WriteAllText(options.OutputFile, result);
+                await file.WriteAllTextAsync(options.OutputFile, result);
             }
             catch (IOException)
             {
