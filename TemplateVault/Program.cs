@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommandLine;
 using VaultSharp;
 using VaultSharp.Core;
-using VaultSharp.V1.AuthMethods.Okta;
 using VaultSharp.V1.Commons;
 
 namespace TemplateVault
@@ -19,12 +17,20 @@ namespace TemplateVault
         {
             var console = new AbstractConsole();
             var file = new AbstractFile();
+            var vaultAuthFactory = new VaultAuthFactory(console);
             
             var options = Parser.Default.ParseArguments<CommandLineOptions>(args)
                 .MapResult(x => x, x => null!);
 
             if (options == null)
             {
+                return 1;
+            }
+
+            // make sure the auth type is supported
+            if (!vaultAuthFactory.GetSupportedAuthTypes().Contains(options.AuthType))
+            {
+                console.WriteErrorLine("Unsupported auth type: {0}", options.AuthType);
                 return 1;
             }
 
@@ -85,8 +91,8 @@ namespace TemplateVault
                 console.WriteLine("  * {0}", variable);
             }
 
-            // get the Okta login for use with Vault
-            var vaultAuth = GetOktaAuthorization(console);
+            // get the login for use with Vault
+            var vaultAuth = vaultAuthFactory.GetAuth(options.AuthType);
 
             // get the vault object
             var vaultRootNoPath = new Uri(vaultRoot, "/");
@@ -163,67 +169,6 @@ namespace TemplateVault
                 .Select(x => x.Value)
                 .Distinct()
                 .ToArray();
-        }
-
-        private static OktaAuthMethodInfo GetOktaAuthorization(IAbstractConsole console)
-        {
-            var user = ReadValue(console, "OKTA Username");
-            var pass = ReadSecureValue(console, "OKTA Password");
-            return new OktaAuthMethodInfo(user, pass);
-        }
-
-        private static string ReadValue(IAbstractConsole console, string? prompt)
-        {
-            if (prompt != null)
-            {
-                console.Write("{0}: ", prompt);
-            }
-
-            string? user = null;
-            while (string.IsNullOrWhiteSpace(user))
-            {
-                user = console.ReadLine();
-            }
-
-            return user;
-        }
-
-        private static string ReadSecureValue(IAbstractConsole console, string? prompt)
-        {
-            if (prompt != null)
-            {
-                console.Write("{0}: ", prompt);
-            }
-
-            var passwordBuilder = new StringBuilder(32);
-            do
-            {
-                ConsoleKey key;
-                do
-                {
-                    // get the next key
-                    // intercept the event to prevent it from being printed on the command line
-                    var keyInfo = console.ReadKey(true);
-                    key = keyInfo.Key;
-
-                    if (key == ConsoleKey.Backspace && passwordBuilder.Length > 0)
-                    {
-                        // remove the last character from the string builder
-                        passwordBuilder.Remove(passwordBuilder.Length - 1, 1);
-                    }
-                    else if (!char.IsControl(keyInfo.KeyChar))
-                    {
-                        // add any new non-control character to the password
-                        passwordBuilder.Append(keyInfo.KeyChar);
-                    }
-                } while (key != ConsoleKey.Enter);
-            } while (passwordBuilder.Length == 0);
-            
-            // insert the final enter that was captured and swallowed
-            console.WriteLine();
-
-            // get the final string
-            return passwordBuilder.ToString();
         }
 
         private static (string? mount, string? path, string? name) ExtractSecretPathParts(Uri vaultRoot, string path)

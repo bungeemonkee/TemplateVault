@@ -9,7 +9,7 @@ writes the result to a new file.
 Run using the input template file as the first
 argument:
 
-`$ VaultTemplate.exe appsettings.local.json.tmpl`
+`$ VaultTemplate.exe appsettings.local.json.tmpl --auth okta`
 
 The template file should end in the extension
 `.tmpl` or `.tpl`
@@ -97,3 +97,13 @@ All of the below would resolve to this secret.
 Note how in the last example the path is defined as an
 absolute path so it ignored the path included in the
 Vault root.
+
+## Auth
+
+Currently the following auth types are suported:
+
+  * Username/Password: `--auth userpass`
+  * OKTA: `--auth okta`
+
+Username/Password authentication is the default, if no
+`--auth` parameter is supplied it will be used.
