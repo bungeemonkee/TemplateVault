@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CommandLine;
 using VaultSharp;
 using VaultSharp.Core;
 using VaultSharp.V1.AuthMethods.Okta;
@@ -16,24 +17,32 @@ namespace TemplateVault
     {
         static async Task<int> Main(string[] args)
         {
-            if (args.Length < 1)
+            var options = Parser.Default.ParseArguments<CommandLineOptions>(args)
+                .MapResult(x => x, x => null!);
+
+            if (options == null)
             {
-                Console.Error.WriteLine("The first argument must be the path to the template file.");
                 return 1;
             }
-            
-            // TODO: Better arg parsing
-            var templateFile = args[0];
-            Console.WriteLine("Using template file: {0}", templateFile);
+
+            // if the output file is not defined generate it from the input file name
+            if (string.IsNullOrWhiteSpace(options.OutputFile))
+            {
+                options.OutputFile = options.InputFile
+                    .Replace(".tmpl", "")
+                    .Replace(".tpl", "");
+            }
+
+            Console.WriteLine("Using template file: {0}", options.InputFile);
             
             string template;
             try
             {
-                template = await File.ReadAllTextAsync(templateFile);
+                template = await File.ReadAllTextAsync(options.InputFile);
             }
             catch (IOException)
             {
-                Console.Error.WriteLine("Unable to read template file: {0}", templateFile);
+                Console.Error.WriteLine("Unable to read template file: {0}", options.InputFile);
                 return 1;
             }
 
@@ -124,20 +133,15 @@ namespace TemplateVault
                 result = result.Replace($"{{{{{variable.Key}}}}}", variable.Value);
             }
             
-            // TODO: Allow overriding this from the args
-            var resultFile = templateFile
-                .Replace(".tmpl", "")
-                .Replace(".tpl", "");
-            
-            Console.WriteLine("Saving result to {0}", resultFile);
+            Console.WriteLine("Saving result to {0}", options.OutputFile);
 
             try
             {
-                File.WriteAllText(resultFile, result);
+                File.WriteAllText(options.OutputFile, result);
             }
             catch (IOException)
             {
-                Console.Error.WriteLine("Unable to write result file: {0}", resultFile);
+                Console.Error.WriteLine("Unable to write result file: {0}", options.OutputFile);
             }
 
             // done, success
