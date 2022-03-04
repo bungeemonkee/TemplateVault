@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TemplateVault", "TemplateVault\TemplateVault.csproj", "{FF2E84B0-F2E6-4BC8-84E6-6666777B0C9D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TemplateVault.Tests", "TemplateVault.Tests\TemplateVault.Tests.csproj", "{C35B8B72-BCDA-49D1-A939-2579E21C45D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{FF2E84B0-F2E6-4BC8-84E6-6666777B0C9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF2E84B0-F2E6-4BC8-84E6-6666777B0C9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF2E84B0-F2E6-4BC8-84E6-6666777B0C9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C35B8B72-BCDA-49D1-A939-2579E21C45D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C35B8B72-BCDA-49D1-A939-2579E21C45D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C35B8B72-BCDA-49D1-A939-2579E21C45D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C35B8B72-BCDA-49D1-A939-2579E21C45D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
