@@ -13,6 +13,12 @@ namespace TemplateVault.Vault
         {
             _client = client;
             _root = vaultRoot;
+
+            // the root uri must always end with a '/' or paths will be wrong
+            if (!_root.AbsolutePath.EndsWith('/'))
+            {
+                _root = new Uri(_root, _root.AbsolutePath + '/');
+            }
         }
 
         public async Task<string?> GetSecretValue(string path)
