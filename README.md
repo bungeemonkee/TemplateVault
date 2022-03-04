@@ -104,6 +104,7 @@ Currently the following auth types are suported:
 
   * Username/Password: `--auth userpass`
   * OKTA: `--auth okta`
+  * Token: `--auth token`
 
 Username/Password authentication is the default, if no
 `--auth` parameter is supplied it will be used.

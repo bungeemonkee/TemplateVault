@@ -5,6 +5,6 @@ namespace TemplateVault
     public interface IVaultAuthFactory
     {
         string[] GetSupportedAuthTypes();
-        IAuthMethodInfo GetAuth(string authType);
+        IAuthMethodInfo GetAuth(string authType, string? mountPoint);
     }
 }

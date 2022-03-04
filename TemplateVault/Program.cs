@@ -18,6 +18,13 @@ namespace TemplateVault
             var vaultAuthFactory = new VaultAuthFactory(console);
             
             var options = Parser.Default.ParseArguments<CommandLineOptions>(args)
+                .WithParsed(x => {
+                    if (string.IsNullOrWhiteSpace(x.AuthMount))
+                    {
+                        // clean any whitespace or empty strings into null
+                        x.AuthMount = null;
+                    }
+                } )
                 .MapResult(x => x, x => null!);
 
             if (options == null)
@@ -90,7 +97,7 @@ namespace TemplateVault
             }
 
             // get the login for use with Vault
-            var vaultAuth = vaultAuthFactory.GetAuth(options.AuthType);
+            var vaultAuth = vaultAuthFactory.GetAuth(options.AuthType, options.AuthMount);
             
             // get the vault secret extractor
             var secretExtractor = new VaultSecretExtractor(vaultAuth, vaultRoot);
