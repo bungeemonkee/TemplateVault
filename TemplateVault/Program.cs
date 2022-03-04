@@ -9,14 +9,32 @@ using VaultSharp.Core;
 
 namespace TemplateVault
 {
-    static class Program
+    public class Program
     {
-        static async Task<int> Main(string[] args)
+        private readonly IAbstractConsole _console;
+        private readonly IAbstractFile _file;
+        private readonly IVaultAuthFactory _authFactory;
+        
+        static Task<int> Main(string[] args)
         {
             var console = new AbstractConsole();
             var file = new AbstractFile();
-            var vaultAuthFactory = new VaultAuthFactory(console);
-            
+            var authFactory = new VaultAuthFactory(console);
+
+            var program = new Program(console, file, authFactory);
+
+            return program.Run(args);
+        }
+
+        public Program(IAbstractConsole console, IAbstractFile file, IVaultAuthFactory authFactory)
+        {
+            _console = console;
+            _file = file;
+            _authFactory = authFactory;
+        }
+
+        public async Task<int>Run(string[] args)
+        {
             var options = Parser.Default.ParseArguments<CommandLineOptions>(args)
                 .WithParsed(x => {
                     if (string.IsNullOrWhiteSpace(x.AuthMount))
@@ -33,14 +51,14 @@ namespace TemplateVault
             }
 
             // make sure the auth type is supported
-            if (vaultAuthFactory.GetSupportedAuthTypes().All(x => x.name != options.AuthType))
+            if (_authFactory.GetSupportedAuthTypes().All(x => x.name != options.AuthType))
             {
-                console.WriteErrorLine("Unsupported auth type: {0}", options.AuthType);
-                console.WriteErrorLine("Valid authentication types are:");
-                foreach (var auth in vaultAuthFactory.GetSupportedAuthTypes())
+                _console.WriteErrorLine("Unsupported auth type: {0}", options.AuthType);
+                _console.WriteErrorLine("Valid authentication types are:");
+                foreach (var auth in _authFactory.GetSupportedAuthTypes())
                 {
                     var padding = new string(' ', 20 - auth.name.Length);
-                    console.WriteErrorLine("  --auth {0}{1}{2}", auth.name, padding, auth.description);
+                    _console.WriteErrorLine("  --auth {0}{1}{2}", auth.name, padding, auth.description);
                 }
                 return 1;
             }
@@ -53,16 +71,16 @@ namespace TemplateVault
                     .Replace(".tpl", "");
             }
 
-            console.WriteLine("Using template file: {0}", options.InputFile);
+            _console.WriteLine("Using template file: {0}", options.InputFile);
             
             string template;
             try
             {
-                template = await file.ReadAllTextAsync(options.InputFile);
+                template = await _file.ReadAllTextAsync(options.InputFile);
             }
             catch (IOException)
             {
-                console.WriteErrorLine("Unable to read template file: {0}", options.InputFile);
+                _console.WriteErrorLine("Unable to read template file: {0}", options.InputFile);
                 return 1;
             }
 
@@ -80,7 +98,7 @@ namespace TemplateVault
                 }
                 catch (IOException)
                 {
-                    console.WriteErrorLine("Failed to parse VAULTROOT uri: {0}", vaultUri);
+                    _console.WriteErrorLine("Failed to parse VAULTROOT uri: {0}", vaultUri);
                     return -1;
                 }
 
@@ -90,20 +108,20 @@ namespace TemplateVault
 
             if (vaultRoot == null)
             {
-                console.WriteErrorLine("No VAULTROOT variable found in template.");
+                _console.WriteErrorLine("No VAULTROOT variable found in template.");
                 return 1;
             }
 
-            console.WriteLine("Using VAULTROOT uri: {0}", vaultRoot.AbsoluteUri);
+            _console.WriteLine("Using VAULTROOT uri: {0}", vaultRoot.AbsoluteUri);
 
-            console.WriteLine("Found secret paths:");
+            _console.WriteLine("Found secret paths:");
             foreach (var variable in variables)
             {
-                console.WriteLine("  * {0}", variable);
+                _console.WriteLine("  * {0}", variable);
             }
 
             // get the login for use with Vault
-            var vaultAuth = vaultAuthFactory.GetAuth(options.AuthType, options.AuthMount);
+            var vaultAuth = _authFactory.GetAuth(options.AuthType, options.AuthMount);
             
             // get the vault secret extractor
             var secretExtractor = new VaultSecretExtractor(vaultAuth, vaultRoot);
@@ -116,14 +134,14 @@ namespace TemplateVault
                     var secretValue = await secretExtractor.GetSecretValue(variable);
                     if (secretValue == null)
                     {
-                        console.WriteErrorLine("No secret found at path {1}", variable);
+                        _console.WriteErrorLine("No secret found at path {1}", variable);
                         return -1;
                     }
 
                     variableValues[variable] = secretValue;
                 } catch (VaultApiException e)
                 {
-                    console.WriteErrorLine("Failed to get secret {0}: {1}", variable, e.Message.Trim());
+                    _console.WriteErrorLine("Failed to get secret {0}: {1}", variable, e.Message.Trim());
                     return 1;
                 }
             }
@@ -134,21 +152,21 @@ namespace TemplateVault
                 result = result.Replace($"{{{{{variable.Key}}}}}", variable.Value);
             }
             
-            console.WriteLine("Saving result to {0}", options.OutputFile);
+            _console.WriteLine("Saving result to {0}", options.OutputFile);
 
             try
             {
-                await file.WriteAllTextAsync(options.OutputFile, result);
+                await _file.WriteAllTextAsync(options.OutputFile, result);
             }
             catch (IOException)
             {
-                console.WriteErrorLine("Unable to write result file: {0}", options.OutputFile);
+                _console.WriteErrorLine("Unable to write result file: {0}", options.OutputFile);
             }
 
             // done, success
             return 0;
         }
-
+        
         private static string[] ExtractTemplateVariables(string template)
         {
             const string regex = @"(?<={{).+(?=}})";
