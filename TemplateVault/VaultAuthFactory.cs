@@ -22,46 +22,46 @@ namespace TemplateVault
     public class VaultAuthFactory : IVaultAuthFactory
     {
         private readonly IAbstractConsole _console;
-        private readonly IReadOnlyDictionary<string, Func<string?, IAuthMethodInfo>> _authTypes;
+        private readonly IReadOnlyDictionary<string, (string description, Func<string?, IAuthMethodInfo> method)> _authTypes;
         
         public VaultAuthFactory(IAbstractConsole console)
         {
             _console = console;
 
-            _authTypes = new Dictionary<string, Func<string?, IAuthMethodInfo>>
+            _authTypes = new Dictionary<string, (string, Func<string?, IAuthMethodInfo>)>
             {
-                ["approle"] = GetApproleAuthorization,
+                ["approle"] = ("AppRole authentication", GetApproleAuthorization),
                 // ["alicloud"] = (AliCloud) SUPPORTED (needs base64 encoded request uri and headers)
                 // ["aws-ec2"] (AWS EC2) NOT SUPPORTED (needs to read key files)
                 // ["aws-iam"] (AWS IAM) NOT SUPPORTED (needs base64 encoded request uri and headers)
-                ["azure"] = GetAzureAuthorization,
+                ["azure"] = ("Azure JWT authorization", GetAzureAuthorization),
                 // ["cf"] (Cloud Factory) NOT SUPPORTED (requires reading key files)
-                ["github"] = GetGitHubAuthorization,
-                ["gcp"] = GetGcpAuthorization,
+                ["github"] = ("GitHub private token authentication", GetGitHubAuthorization),
+                ["gcp"] = ("Google Cloud JWT authentication", GetGcpAuthorization),
                 // ["oidc"] (JWT/OIDC) NOT SUPPORTED (requires browser redirection)
-                ["jwt"] = GetJetAuthorization,
-                ["kerbos"] = GetKerbosAuthorization,
-                ["kubernetes"] = GetKubernetesAuthorization,
-                ["ldap"] = GetLdapAuthentication,
+                ["jwt"] = ("JWT authentication", GetJwtAuthorization),
+                ["kerbos"] = ("Kerbos username and password authentication", GetKerbosAuthorization),
+                ["kubernetes"] = ("Kubernetes JWT authentication", GetKubernetesAuthorization),
+                ["ldap"] = ("LDAP username and password authentication", GetLdapAuthentication),
                 // ["oci"] (Oracle Cloud Infrastructure) NOT SUPPORTED (requires request header dictionary)
-                ["okta"] = GetOktaAuthorization,
-                ["radius"] = GetRadiusAuthorization,
+                ["okta"] = ("OKTA username and password authentication", GetOktaAuthorization),
+                ["radius"] = ("RADIUS username and password authentication", GetRadiusAuthorization),
                 // ["cert"] (TLS Certificate) NOT SUPPORTED (requires reading cert files)
-                ["token"] = GetTokenAuthorization,
-                ["userpass"] = GetUserpassAuthorization,
+                ["token"] = ("VAULT Token authentication", GetTokenAuthorization),
+                ["userpass"] = ("VAULT username and password authentication (default)", GetUserpassAuthorization),
             };
         }
 
-        public string[] GetSupportedAuthTypes()
+        public IEnumerable<(string name, string description)> GetSupportedAuthTypes()
         {
-            return _authTypes.Keys.ToArray();
+            return _authTypes.Select(x => (x.Key, x.Value.description));
         }
 
         public IAuthMethodInfo GetAuth(string authType, string? mountPoint)
         {
-            if (_authTypes.TryGetValue(authType, out var func))
+            if (_authTypes.TryGetValue(authType, out var value))
             {
-                return func(mountPoint);
+                return value.method(mountPoint);
             }
 
             throw new InvalidOperationException("Unknown auth type: " + authType);
@@ -106,7 +106,7 @@ namespace TemplateVault
                 : new GoogleCloudAuthMethodInfo(mount, role, jwt);
         }
 
-        private IAuthMethodInfo GetJetAuthorization(string? mount)
+        private IAuthMethodInfo GetJwtAuthorization(string? mount)
         {
             var role = ReadValue("JWT Role", false);
             var jwt = ReadSecureValue("JWT");

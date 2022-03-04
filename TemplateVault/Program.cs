@@ -33,9 +33,15 @@ namespace TemplateVault
             }
 
             // make sure the auth type is supported
-            if (!vaultAuthFactory.GetSupportedAuthTypes().Contains(options.AuthType))
+            if (vaultAuthFactory.GetSupportedAuthTypes().All(x => x.name != options.AuthType))
             {
                 console.WriteErrorLine("Unsupported auth type: {0}", options.AuthType);
+                console.WriteErrorLine("Valid authentication types are:");
+                foreach (var auth in vaultAuthFactory.GetSupportedAuthTypes())
+                {
+                    var padding = new string(' ', 20 - auth.name.Length);
+                    console.WriteErrorLine("  --auth {0}{1}{2}", auth.name, padding, auth.description);
+                }
                 return 1;
             }
 
