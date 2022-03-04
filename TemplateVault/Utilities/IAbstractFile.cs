@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace TemplateVault
+namespace TemplateVault.Utilities
 {
     public interface IAbstractFile
     {

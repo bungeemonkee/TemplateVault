@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommandLine;
+using TemplateVault.Utilities;
+using TemplateVault.Vault;
 using VaultSharp.Core;
 
 namespace TemplateVault

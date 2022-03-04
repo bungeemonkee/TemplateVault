@@ -1,6 +1,6 @@
 using System;
 
-namespace TemplateVault
+namespace TemplateVault.Utilities
 {
     public interface IAbstractConsole
     {

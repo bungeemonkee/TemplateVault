@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using TemplateVault.Utilities;
 using VaultSharp.V1.AuthMethods;
 using VaultSharp.V1.AuthMethods.AppRole;
 using VaultSharp.V1.AuthMethods.Azure;
@@ -17,7 +18,7 @@ using VaultSharp.V1.AuthMethods.RADIUS;
 using VaultSharp.V1.AuthMethods.Token;
 using VaultSharp.V1.AuthMethods.UserPass;
 
-namespace TemplateVault
+namespace TemplateVault.Vault
 {
     public class VaultAuthFactory : IVaultAuthFactory
     {

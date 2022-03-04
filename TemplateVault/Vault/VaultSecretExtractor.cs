@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using VaultSharp;
 using VaultSharp.V1.AuthMethods;
 
-namespace TemplateVault
+namespace TemplateVault.Vault
 {
     public class VaultSecretExtractor
     {

@@ -1,7 +1,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace TemplateVault
+namespace TemplateVault.Utilities
 {
     public class AbstractFile : IAbstractFile
     {

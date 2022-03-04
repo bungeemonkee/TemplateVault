@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using VaultSharp.V1.AuthMethods;
 
-namespace TemplateVault
+namespace TemplateVault.Vault
 {
     public interface IVaultAuthFactory
     {
