@@ -16,23 +16,27 @@ namespace TemplateVault
         private readonly IAbstractConsole _console;
         private readonly IAbstractFile _file;
         private readonly IVaultAuthFactory _authFactory;
+        private readonly IVaultSecretExtractorFactory _secretExtractorFactory;
         
         static Task<int> Main(string[] args)
         {
             var console = new AbstractConsole();
             var file = new AbstractFile();
             var authFactory = new VaultAuthFactory(console);
+            var clientFactory = new VaultClientFactory();
+            var secretExtractorFactory = new VaultSecretExtractorFactory(clientFactory);
 
-            var program = new Program(console, file, authFactory);
+            var program = new Program(console, file, authFactory, secretExtractorFactory);
 
             return program.Run(args);
         }
 
-        public Program(IAbstractConsole console, IAbstractFile file, IVaultAuthFactory authFactory)
+        public Program(IAbstractConsole console, IAbstractFile file, IVaultAuthFactory authFactory, IVaultSecretExtractorFactory secretExtractorFactory)
         {
             _console = console;
             _file = file;
             _authFactory = authFactory;
+            _secretExtractorFactory = secretExtractorFactory;
         }
 
         public async Task<int>Run(string[] args)
@@ -126,7 +130,7 @@ namespace TemplateVault
             var vaultAuth = _authFactory.GetAuth(options.AuthType, options.AuthMount);
             
             // get the vault secret extractor
-            var secretExtractor = new VaultSecretExtractor(vaultAuth, vaultRoot);
+            var secretExtractor = _secretExtractorFactory.GetVaultSecretExtractor(vaultAuth, vaultRoot);
 
             var variableValues = new Dictionary<string, string>();
             foreach (var variable in variables)
