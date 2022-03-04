@@ -70,7 +70,7 @@ namespace TemplateVault.Vault
 
         private IAuthMethodInfo GetApproleAuthorization(string? mount)
         {
-            var role = ReadValue("AppRole RoleId", false);
+            var role = ReadValue("AppRole RoleId", true);
             var secret = ReadSecureValue("AppRole SecretId");
             return mount == null
                 ? new AppRoleAuthMethodInfo(role, secret)
@@ -79,12 +79,12 @@ namespace TemplateVault.Vault
 
         private IAuthMethodInfo GetAzureAuthorization(string? mount)
         {
-            var roleName = ReadValue("Azure RoleId", false);
+            var roleName = ReadValue("Azure RoleId", true);
             var jwt = ReadSecureValue("Azure JWT");
-            var subscriptionId = ReadValue("Azure SubscriptionId", true);
-            var resourceGroupName = ReadValue("Azure Resource Group Name", true);
-            var virtualMachineName = ReadValue("Azure Virtual Machine Name", true);
-            var virtualMachineScaleSetName = ReadValue("Azure Virtual Machine Scale Set Name", true);
+            var subscriptionId = ReadValue("Azure SubscriptionId", false);
+            var resourceGroupName = ReadValue("Azure Resource Group Name", false);
+            var virtualMachineName = ReadValue("Azure Virtual Machine Name", false);
+            var virtualMachineScaleSetName = ReadValue("Azure Virtual Machine Scale Set Name", false);
             return mount == null
                 ? new AzureAuthMethodInfo(roleName, jwt, subscriptionId, resourceGroupName, virtualMachineName, virtualMachineScaleSetName)
                 : new AzureAuthMethodInfo(mount, roleName, jwt, subscriptionId, resourceGroupName, virtualMachineName, virtualMachineScaleSetName);
@@ -100,7 +100,7 @@ namespace TemplateVault.Vault
 
         private IAuthMethodInfo GetGcpAuthorization(string? mount)
         {
-            var role = ReadValue("Google RoleId", false);
+            var role = ReadValue("Google RoleId", true);
             var jwt = ReadSecureValue("Google JWT");
             return mount == null
                 ? new GoogleCloudAuthMethodInfo(role, jwt)
@@ -109,7 +109,7 @@ namespace TemplateVault.Vault
 
         private IAuthMethodInfo GetJwtAuthorization(string? mount)
         {
-            var role = ReadValue("JWT Role", false);
+            var role = ReadValue("JWT Role", true);
             var jwt = ReadSecureValue("JWT");
             return mount == null
                 ? new JWTAuthMethodInfo(role, jwt)
@@ -118,9 +118,9 @@ namespace TemplateVault.Vault
 
         private IAuthMethodInfo GetKerbosAuthorization(string? mount)
         {
-            var user = ReadValue("Kerbos Username", false);
+            var user = ReadValue("Kerbos Username", true);
             var pass = ReadSecureValue("Kerbos Password");
-            var domain = ReadValue("Kerbos Domain", false);
+            var domain = ReadValue("Kerbos Domain", true);
             
             var credentials = new NetworkCredential(user, pass, domain);
             
@@ -131,7 +131,7 @@ namespace TemplateVault.Vault
 
         private IAuthMethodInfo GetKubernetesAuthorization(string? mount)
         {
-            var role = ReadValue("Kubernetes Role Id", false);
+            var role = ReadValue("Kubernetes Role Id", true);
             var jwt = ReadSecureValue("Kubernetes JWT");
             
             return mount == null
@@ -141,7 +141,7 @@ namespace TemplateVault.Vault
 
         private IAuthMethodInfo GetLdapAuthentication(string? mount)
         {
-            var user = ReadValue("LDAP Username", false);
+            var user = ReadValue("LDAP Username", true);
             var pass = ReadSecureValue("LDAP Password");
             
             return mount == null
@@ -151,7 +151,7 @@ namespace TemplateVault.Vault
         
         private IAuthMethodInfo GetOktaAuthorization(string? mount)
         {
-            var user = ReadValue("OKTA Username", false);
+            var user = ReadValue("OKTA Username", true);
             var pass = ReadSecureValue("OKTA Password");
             
             return mount == null
@@ -161,7 +161,7 @@ namespace TemplateVault.Vault
         
         private IAuthMethodInfo GetRadiusAuthorization(string? mount)
         {
-            var user = ReadValue("RADIUS Username", false);
+            var user = ReadValue("RADIUS Username", true);
             var pass = ReadSecureValue("RADIUS Password");
 
             return mount == null
@@ -177,22 +177,22 @@ namespace TemplateVault.Vault
 
         private IAuthMethodInfo GetUserpassAuthorization(string? mount)
         {
-            var user = ReadValue("Username", false);
+            var user = ReadValue("Username", true);
             var pass = ReadSecureValue("Password");
             return mount == null
                 ? new UserPassAuthMethodInfo(user, pass)
                 : new UserPassAuthMethodInfo(mount, user, pass);
         }
 
-        private string? ReadValue(string prompt, bool allowEmpty)
+        private string? ReadValue(string prompt, bool required)
         {
-            _console.Write("{0} ({1}): ", prompt, allowEmpty ? "may be blank" : "required");
+            _console.Write("{0} ({1}): ", prompt, required ? "required":  "may be blank" );
 
             string? value = null;
             do
             {
                 value = _console.ReadLine();
-            } while (allowEmpty || string.IsNullOrWhiteSpace(value));
+            } while (required && string.IsNullOrWhiteSpace(value));
 
             if (string.IsNullOrWhiteSpace(value))
             {
