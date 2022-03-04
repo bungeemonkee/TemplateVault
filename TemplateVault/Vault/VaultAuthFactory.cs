@@ -186,11 +186,11 @@ namespace TemplateVault.Vault
 
         private string? ReadValue(string prompt, bool required)
         {
-            _console.Write("{0} ({1}): ", prompt, required ? "required":  "may be blank" );
-
             string? value = null;
             do
             {
+                _console.Write("{0} ({1}): ", prompt, required ? "required":  "may be blank" );
+                
                 value = _console.ReadLine();
             } while (required && string.IsNullOrWhiteSpace(value));
 
