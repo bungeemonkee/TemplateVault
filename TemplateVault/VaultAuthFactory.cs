@@ -204,7 +204,7 @@ namespace TemplateVault
 
         private string ReadSecureValue (string prompt)
         {
-            _console.Write("{0}: ", prompt);
+            _console.Write("{0}: (required)", prompt);
 
             var passwordBuilder = new StringBuilder(32);
             do
