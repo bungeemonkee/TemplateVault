@@ -195,7 +195,7 @@ namespace TemplateVault
         
         private static string[] ExtractTemplateVariables(string template)
         {
-            const string regex = @"(?<={{).+(?=}})";
+            const string regex = @"(?<={{).+?(?=}})";
 
             var variables = Regex.Matches(template, regex);
 
