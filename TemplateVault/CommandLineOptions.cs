@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using CommandLine;
+using CommandLine.Text;
 
 namespace TemplateVault
 {
@@ -18,5 +20,17 @@ namespace TemplateVault
 
         [Option('y', HelpText = "Overwrite the output file without asking if it already exists.")]
         public bool Yes { get; set; }
+
+        [Usage(ApplicationAlias = "TemplateVault")]
+        public static IEnumerable<Example> Examples
+        {
+            get
+            {
+                yield return new Example("Normal usage", new CommandLineOptions{InputFile = "settings.conf.tmpl"});
+                yield return new Example("Override output file", new CommandLineOptions{InputFile = "settings.conf.tmpl", OutputFile = "generated_settings.conf"});
+                yield return new Example("Specify authorization", new CommandLineOptions{InputFile = "settings.conf.tmpl", AuthType = "okta"});
+                yield return new Example("Override authorization mount", new CommandLineOptions{InputFile = "settings.conf.tmpl", AuthType = "okta", AuthMount = "okta_mount"});
+            }
+        }
     }
 }
