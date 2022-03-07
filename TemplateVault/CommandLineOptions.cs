@@ -15,5 +15,8 @@ namespace TemplateVault
 
         [Option('m', "auth-mount", Required = false, Default = null, HelpText = "Override the default auth mount point.")]
         public string? AuthMount { get; set; } = null;
+
+        [Option('y', HelpText = "Overwrite the output file without asking if it already exists.")]
+        public bool Yes { get; set; }
     }
 }

@@ -76,8 +76,21 @@ namespace TemplateVault
                     .Replace(".tmpl", "")
                     .Replace(".tpl", "");
             }
-
+            
             _console.WriteLine("Using template file: {0}", options.InputFile);
+            _console.WriteLine("Using output file: {0}", options.OutputFile);
+            
+            // detect if the output file exists
+            if (!options.Yes && _file.Exists(options.OutputFile))
+            {
+                _console.Write("Output file ({0}) already exists. Overwrite? (y/n): ", options.OutputFile);
+                var overwrite = _console.ReadLine();
+
+                if (!string.Equals("y", overwrite, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return 0;
+                }
+            }
             
             string template;
             try
