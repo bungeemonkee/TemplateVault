@@ -125,7 +125,7 @@ namespace TemplateVault
                 catch (IOException)
                 {
                     _console.WriteErrorLine("Failed to parse VAULTROOT uri: {0}", vaultUri);
-                    return -1;
+                    return 1;
                 }
 
                 // remove the Vault root from the variable list
@@ -161,7 +161,7 @@ namespace TemplateVault
                     if (secretValue == null)
                     {
                         _console.WriteErrorLine("No secret found at path {1}", variable);
-                        return -1;
+                        return 1;
                     }
 
                     variableValues[variable] = secretValue;
