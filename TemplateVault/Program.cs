@@ -105,6 +105,13 @@ namespace TemplateVault
 
             Uri? vaultRoot = null;
             var variables = ExtractTemplateVariables(template);
+
+            if (variables.Length == 0)
+            {
+                _console.WriteErrorLine("No variables found in template.");
+                return 1;
+            }
+
             if (variables[0].StartsWith("VAULTROOT:", StringComparison.InvariantCultureIgnoreCase))
             {
                 var vaultUri = variables[0]
