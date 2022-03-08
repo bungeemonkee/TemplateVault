@@ -187,6 +187,7 @@ namespace TemplateVault
             catch (IOException)
             {
                 _console.WriteErrorLine("Unable to write result file: {0}", options.OutputFile);
+                return 1;
             }
 
             // done, success
