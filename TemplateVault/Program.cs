@@ -122,7 +122,7 @@ namespace TemplateVault
                 {
                     vaultRoot = new Uri(vaultUri);
                 }
-                catch (IOException)
+                catch (UriFormatException)
                 {
                     _console.WriteErrorLine("Failed to parse VAULTROOT uri: {0}", vaultUri);
                     return 1;
