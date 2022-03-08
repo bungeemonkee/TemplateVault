@@ -160,7 +160,7 @@ namespace TemplateVault
                     var secretValue = await secretExtractor.GetSecretValue(variable);
                     if (secretValue == null)
                     {
-                        _console.WriteErrorLine("No secret found at path {1}", variable);
+                        _console.WriteErrorLine("No secret found at path {0}", variable);
                         return 1;
                     }
 
