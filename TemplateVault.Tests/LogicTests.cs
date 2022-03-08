@@ -12,7 +12,7 @@ using VaultSharp.V1.AuthMethods;
 namespace TemplateVault.Tests
 {
     [ExcludeFromCodeCoverage]
-    public class ProgramTests
+    public class LogicTests
     {
         [Test]
         public async Task Run_SimpleSuccessCase()
@@ -58,9 +58,9 @@ namespace TemplateVault.Tests
             secretFactoryMock.Setup(x => x.GetVaultSecretExtractor(It.Is<IAuthMethodInfo>(y => y == authMock.Object), It.IsNotNull<Uri>()))
                     .Returns(() => secretExtractorMock.Object);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
@@ -116,9 +116,9 @@ namespace TemplateVault.Tests
             secretFactoryMock.Setup(x => x.GetVaultSecretExtractor(It.Is<IAuthMethodInfo>(y => y == authMock.Object), It.IsNotNull<Uri>()))
                     .Returns(() => secretExtractorMock.Object);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
@@ -174,9 +174,9 @@ namespace TemplateVault.Tests
             secretFactoryMock.Setup(x => x.GetVaultSecretExtractor(It.Is<IAuthMethodInfo>(y => y == authMock.Object), It.IsNotNull<Uri>()))
                     .Returns(() => secretExtractorMock.Object);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
@@ -232,9 +232,9 @@ namespace TemplateVault.Tests
             secretFactoryMock.Setup(x => x.GetVaultSecretExtractor(It.Is<IAuthMethodInfo>(y => y == authMock.Object), It.IsNotNull<Uri>()))
                     .Returns(() => secretExtractorMock.Object);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
@@ -290,9 +290,9 @@ namespace TemplateVault.Tests
             secretFactoryMock.Setup(x => x.GetVaultSecretExtractor(It.Is<IAuthMethodInfo>(y => y == authMock.Object), It.IsNotNull<Uri>()))
                     .Returns(() => secretExtractorMock.Object);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
@@ -348,9 +348,9 @@ namespace TemplateVault.Tests
             secretFactoryMock.Setup(x => x.GetVaultSecretExtractor(It.Is<IAuthMethodInfo>(y => y == authMock.Object), It.IsNotNull<Uri>()))
                     .Returns(() => secretExtractorMock.Object);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
@@ -403,9 +403,9 @@ namespace TemplateVault.Tests
             secretFactoryMock.Setup(x => x.GetVaultSecretExtractor(It.Is<IAuthMethodInfo>(y => y == authMock.Object), It.IsNotNull<Uri>()))
                     .Returns(() => secretExtractorMock.Object);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
@@ -465,9 +465,9 @@ namespace TemplateVault.Tests
             secretFactoryMock.Setup(x => x.GetVaultSecretExtractor(It.Is<IAuthMethodInfo>(y => y == authMock.Object), It.IsNotNull<Uri>()))
                     .Returns(() => secretExtractorMock.Object);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
@@ -504,9 +504,9 @@ namespace TemplateVault.Tests
             
             var secretFactoryMock = new Mock<IVaultSecretExtractorFactory>(MockBehavior.Strict);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
@@ -527,9 +527,9 @@ namespace TemplateVault.Tests
             var authFactoryMock = new Mock<IVaultAuthFactory>(MockBehavior.Strict);
             var secretFactory = new Mock<IVaultSecretExtractorFactory>(MockBehavior.Strict);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactory.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactory.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
@@ -559,9 +559,9 @@ namespace TemplateVault.Tests
             
             var secretFactory = new Mock<IVaultSecretExtractorFactory>(MockBehavior.Strict);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactory.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactory.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
@@ -595,9 +595,9 @@ namespace TemplateVault.Tests
 
             var secretFactoryMock = new Mock<IVaultSecretExtractorFactory>(MockBehavior.Strict);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
@@ -652,9 +652,9 @@ namespace TemplateVault.Tests
             secretFactoryMock.Setup(x => x.GetVaultSecretExtractor(It.Is<IAuthMethodInfo>(y => y == authMock.Object), It.IsNotNull<Uri>()))
                     .Returns(() => secretExtractorMock.Object);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
@@ -691,9 +691,9 @@ namespace TemplateVault.Tests
 
                 var secretFactoryMock = new Mock<IVaultSecretExtractorFactory>(MockBehavior.Strict);
 
-                var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+                var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
 
-                var result = await program.Run(args);
+                var result = await logic.Run(args);
 
                 Assert.AreEqual(expectedReturn, result);
 
@@ -728,9 +728,9 @@ namespace TemplateVault.Tests
 
             var secretFactoryMock = new Mock<IVaultSecretExtractorFactory>(MockBehavior.Strict);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
@@ -765,9 +765,9 @@ namespace TemplateVault.Tests
 
             var secretFactoryMock = new Mock<IVaultSecretExtractorFactory>(MockBehavior.Strict);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
@@ -818,9 +818,9 @@ namespace TemplateVault.Tests
             secretFactoryMock.Setup(x => x.GetVaultSecretExtractor(It.Is<IAuthMethodInfo>(y => y == authMock.Object), It.IsNotNull<Uri>()))
                     .Returns(() => secretExtractorMock.Object);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
@@ -873,9 +873,9 @@ namespace TemplateVault.Tests
             secretFactoryMock.Setup(x => x.GetVaultSecretExtractor(It.Is<IAuthMethodInfo>(y => y == authMock.Object), It.IsNotNull<Uri>()))
                     .Returns(() => secretExtractorMock.Object);
 
-            var program = new Program(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
 
-            var result = await program.Run(args);
+            var result = await logic.Run(args);
             
             Assert.AreEqual(expectedReturn, result);
             
