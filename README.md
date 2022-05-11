@@ -1,8 +1,7 @@
 # Template Vault
 
-A simple proof of concept that processes a template
-file, pulls the needed values out of Vault, then
-writes the result to a new file.
+A simple tool to generate local dev config files from a
+template in git using values stored in Hasicorp Vault.
 
 ## Using Template Vault
 
