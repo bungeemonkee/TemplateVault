@@ -138,3 +138,10 @@ In some cases the auth backend is mounted in Vault in a
 non-standard location. If this is the case the
 `--auth-mount` option can be provided with the location
 of the auth mount point to use.
+
+## Escaping Within Replaced Values
+
+By default, any double quotes (`"`) or newlines within the values
+pulled from vault will be replaced with `\"` and `\n` respectively.
+
+To disable this behavior use the command line switch `--no-escape`

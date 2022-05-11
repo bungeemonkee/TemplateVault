@@ -886,5 +886,121 @@ namespace TemplateVault.Tests
             secretExtractorMock.VerifyAll();
             secretFactoryMock.VerifyAll();
         }
+        
+        [Test]
+        public async Task Run_WithEscape()
+        {
+            const int expectedReturn = 0;
+            const string template = "{{VAULTROOT: https://example.com}}\n{{variable1}}\n{{variable2}}";
+            const string? authMount = null;
+            const string outputFile = "settings.conf";
+            const string outputContents = "{{VAULTROOT: https://example.com}}\n\\\"value_1\\\"\nvalue\\n2";
+            const bool outputExists = false;
+            var args = new[] { "settings.conf.tmpl", "settings.conf", "--auth", "auth" };
+            var authMethods = new[] { ("auth", "an auth method") };
+            var variables = new[] { ("variable1", "\"value_1\""), ("variable2", "value\n2") };
+            
+            var consoleMock = new Mock<IAbstractConsole>(MockBehavior.Strict);
+            consoleMock.Setup(x => x.WriteLine(It.IsNotNull<string>(), It.IsNotNull<string>()));
+            consoleMock.Setup(x => x.WriteLine(It.IsNotNull<string>()));
+
+            var fileMock = new Mock<IAbstractFile>(MockBehavior.Strict);
+            fileMock.Setup(x => x.Exists(It.IsNotNull<string>()))
+                    .Returns(outputExists);
+            fileMock.Setup(x => x.ReadAllTextAsync(It.IsNotNull<string>()))
+                    .ReturnsAsync(template);
+            fileMock.Setup(x => x.WriteAllTextAsync(It.Is<string>(y => y == outputFile), It.Is<string>(y => y == outputContents)))
+                    .Returns(Task.CompletedTask);
+
+            var authMock = new Mock<IAuthMethodInfo>(MockBehavior.Strict);
+            
+            var authFactoryMock = new Mock<IVaultAuthFactory>(MockBehavior.Strict);
+            authFactoryMock.Setup(x => x.GetSupportedAuthTypes())
+                    .Returns(authMethods);
+            authFactoryMock.Setup(x => x.GetAuth(It.IsNotNull<string>(), authMount))
+                    .Returns(() => authMock.Object);
+
+            var secretExtractorMock = new Mock<IVaultSecretExtractor>(MockBehavior.Strict);
+            foreach (var (variableName, variableValue) in variables)
+            {
+                secretExtractorMock.Setup(x => x.GetSecretValue(It.Is<string>(y => y == variableName)))
+                    .ReturnsAsync(variableValue);
+            }
+
+            var secretFactoryMock = new Mock<IVaultSecretExtractorFactory>(MockBehavior.Strict);
+            secretFactoryMock.Setup(x => x.GetVaultSecretExtractor(It.Is<IAuthMethodInfo>(y => y == authMock.Object), It.IsNotNull<Uri>()))
+                    .Returns(() => secretExtractorMock.Object);
+
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+
+            var result = await logic.Run(args);
+            
+            Assert.AreEqual(expectedReturn, result);
+            
+            consoleMock.VerifyAll();
+            fileMock.VerifyAll();
+            authMock.VerifyAll();
+            authFactoryMock.VerifyAll();
+            secretExtractorMock.VerifyAll();
+            secretFactoryMock.VerifyAll();
+        }
+        
+        [Test]
+        public async Task Run_WithNoEscape()
+        {
+            const int expectedReturn = 0;
+            const string template = "{{VAULTROOT: https://example.com}}\n{{variable1}}\n{{variable2}}";
+            const string? authMount = null;
+            const string outputFile = "settings.conf";
+            const string outputContents = "{{VAULTROOT: https://example.com}}\n\"value_1\"\nvalue\n2";
+            const bool outputExists = false;
+            var args = new[] { "settings.conf.tmpl", "settings.conf", "--auth", "auth", "--no-escape" };
+            var authMethods = new[] { ("auth", "an auth method") };
+            var variables = new[] { ("variable1", "\"value_1\""), ("variable2", "value\n2") };
+            
+            var consoleMock = new Mock<IAbstractConsole>(MockBehavior.Strict);
+            consoleMock.Setup(x => x.WriteLine(It.IsNotNull<string>(), It.IsNotNull<string>()));
+            consoleMock.Setup(x => x.WriteLine(It.IsNotNull<string>()));
+
+            var fileMock = new Mock<IAbstractFile>(MockBehavior.Strict);
+            fileMock.Setup(x => x.Exists(It.IsNotNull<string>()))
+                    .Returns(outputExists);
+            fileMock.Setup(x => x.ReadAllTextAsync(It.IsNotNull<string>()))
+                    .ReturnsAsync(template);
+            fileMock.Setup(x => x.WriteAllTextAsync(It.Is<string>(y => y == outputFile), It.Is<string>(y => y == outputContents)))
+                    .Returns(Task.CompletedTask);
+
+            var authMock = new Mock<IAuthMethodInfo>(MockBehavior.Strict);
+            
+            var authFactoryMock = new Mock<IVaultAuthFactory>(MockBehavior.Strict);
+            authFactoryMock.Setup(x => x.GetSupportedAuthTypes())
+                    .Returns(authMethods);
+            authFactoryMock.Setup(x => x.GetAuth(It.IsNotNull<string>(), authMount))
+                    .Returns(() => authMock.Object);
+
+            var secretExtractorMock = new Mock<IVaultSecretExtractor>(MockBehavior.Strict);
+            foreach (var (variableName, variableValue) in variables)
+            {
+                secretExtractorMock.Setup(x => x.GetSecretValue(It.Is<string>(y => y == variableName)))
+                    .ReturnsAsync(variableValue);
+            }
+
+            var secretFactoryMock = new Mock<IVaultSecretExtractorFactory>(MockBehavior.Strict);
+            secretFactoryMock.Setup(x => x.GetVaultSecretExtractor(It.Is<IAuthMethodInfo>(y => y == authMock.Object), It.IsNotNull<Uri>()))
+                    .Returns(() => secretExtractorMock.Object);
+
+            var logic = new Logic(consoleMock.Object, fileMock.Object, authFactoryMock.Object, secretFactoryMock.Object);
+
+            var result = await logic.Run(args);
+            
+            Assert.AreEqual(expectedReturn, result);
+            
+            consoleMock.VerifyAll();
+            fileMock.VerifyAll();
+            authMock.VerifyAll();
+            authFactoryMock.VerifyAll();
+            secretExtractorMock.VerifyAll();
+            secretFactoryMock.VerifyAll();
+        }
     }
 }

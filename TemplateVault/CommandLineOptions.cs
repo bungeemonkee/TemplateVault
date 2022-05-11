@@ -20,6 +20,9 @@ namespace TemplateVault
 
         [Option('y', HelpText = "Overwrite the output file without asking if it already exists.")]
         public bool Yes { get; set; }
+        
+        [Option(longName:"no-escape", Required = false, Default = false, HelpText = "Do not escape '\"' and newline characters in the replaced values")]
+        public bool NoEscape { get; set; }
 
         [Usage(ApplicationAlias = "TemplateVault")]
         public static IEnumerable<Example> Examples

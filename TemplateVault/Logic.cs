@@ -150,6 +150,13 @@ namespace TemplateVault
                         _console.WriteErrorLine("No secret found at path {0}", variable);
                         return 1;
                     }
+                    
+                    // If we need to escape the value, do it
+                    if (!options.NoEscape)
+                    {
+                        secretValue = secretValue.Replace("\"", "\\\"");
+                        secretValue = secretValue.Replace("\n", "\\n");
+                    }
 
                     variableValues[variable] = secretValue;
                 } catch (VaultApiException e)
