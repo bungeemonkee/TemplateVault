@@ -20,7 +20,7 @@ This installation only needs to be done once.
 Run using the input template file as the first
 argument:
 
-`$ VaultTemplate appsettings.local.json.tmpl --auth okta`
+`$ TemplateVault appsettings.local.json.tmpl --auth okta`
 
 The template file should end in the extension
 `.tmpl` or `.tpl`
