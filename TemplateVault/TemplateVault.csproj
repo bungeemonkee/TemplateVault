@@ -7,6 +7,13 @@
 
         <PackAsTool>true</PackAsTool>
         <ToolCommandName>TemplateVault</ToolCommandName>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>Template Vault</Title>
+        <Authors>David Love</Authors>
+        <Description>A simple tool to generate local dev config files from a template in git using values stored in Hasicorp Vault.</Description>
+        <PackageProjectUrl>https://github.com/bungeemonkee/TemplateVault</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/bungeemonkee/TemplateVault</RepositoryUrl>
+        <PackageVersion>1.0.0</PackageVersion>
     </PropertyGroup>
 
     <ItemGroup>
