@@ -4,12 +4,23 @@ A simple proof of concept that processes a template
 file, pulls the needed values out of Vault, then
 writes the result to a new file.
 
-## Running Template Vault
+## Using Template Vault
+
+### Installation
+
+Before being used Template Vault must be installed.
+It is published as a DotNet tool and can easily be installed via nuget like so:
+
+`$ dotnet tool install --global TemplateVault`
+
+This installation only needs to be done once.
+
+### Running
 
 Run using the input template file as the first
 argument:
 
-`$ VaultTemplate.exe appsettings.local.json.tmpl --auth okta`
+`$ VaultTemplate appsettings.local.json.tmpl --auth okta`
 
 The template file should end in the extension
 `.tmpl` or `.tpl`
