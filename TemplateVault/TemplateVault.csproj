@@ -13,7 +13,7 @@
         <Description>A simple tool to generate local dev config files from a template in git using values stored in Hasicorp Vault.</Description>
         <PackageProjectUrl>https://github.com/bungeemonkee/TemplateVault</PackageProjectUrl>
         <RepositoryUrl>https://github.com/bungeemonkee/TemplateVault</RepositoryUrl>
-        <PackageReadmeFile>../README.md</PackageReadmeFile>
+        <PackageReadMeFile>README.md</PackageReadMeFile>
         <PackageVersion>1.2.0</PackageVersion>
     </PropertyGroup>
 
@@ -21,5 +21,8 @@
       <PackageReference Include="CommandLineParser" Version="2.8.0" />
       <PackageReference Include="VaultSharp" Version="1.7.0.4" />
     </ItemGroup>
-
+    
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
 </Project>
